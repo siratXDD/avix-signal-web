@@ -1,135 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>AviX Signals</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
-      margin: 0;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-
-    input, select, button {
-      width: 90%;
-      max-width: 400px;
-      padding: 12px;
-      font-size: 16px;
-      margin: 10px auto;
-      display: block;
-      border-radius: 8px;
-      border: none;
-    }
-
-    button {
-      background-color: #28a745;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
-    .circle {
-      width: 60px;
-      height: 60px;
-      margin: 30px auto;
-      border: 5px solid #00ffcc;
-      border-top: 5px solid transparent;
-      border-radius: 50%;
-      animation: spin 2s linear infinite;
-      display: none;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    #signalText {
-      font-size: 26px;
-      color: #00ff77;
-      margin-top: 20px;
-    }
-
-    .hidden { display: none; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Key Validator</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 2em; background: #f0f0f0; }
+  input, button { padding: 0.5em; font-size: 1em; }
+  #result { margin-top: 1em; font-weight: bold; }
+</style>
 </head>
 <body>
 
-  <h1>🚀 AviX Signals</h1>
+<h1>Enter Your Key</h1>
+<input id="keyInput" type="text" placeholder="Type your key here" />
+<button onclick="checkKey()">Check Key</button>
 
-  <!-- Key Form -->
-  <div id="keyForm">
-    <input type="text" id="keyInput" placeholder="Enter your key (e.g. KM6YSD52)">
-    <button onclick="validateKey()">Unlock</button>
-  </div>
+<div id="result"></div>
 
-  <!-- Platform Selection -->
-  <div id="platformForm" class="hidden">
-    <select id="platform">
-      <option disabled selected>Select Platform</option>
-      <option>Melbet</option>
-      <option>1xBet</option>
-      <option>Mostbet</option>
-      <option>1Win</option>
-    </select>
-    <button onclick="selectPlatform()">Continue</button>
-  </div>
+<script>
+// Put your full key list here inside the Set:
+const VALID_KEYS = new Set([
+  "8HOJFV77","XIJLVC5O","R6FLLI6S","BO09P34S","PDXF4JGD","DGB39P2E","L7FL0GM7",
+  "V9N6ZP62","4IO69SKY","A11L2AGC","2U22EYPH","NWCHQNYW","EXOKDFY5","LZ8S0NMP",
+  "XKX4GGLV","2M55X8BS","IEXH8UBX","1D6ZZ0PN","B8CKX8DK","2YPMNPVA","ZOKMK38M",
+  "YSF2U8RG","4Q0DDE2J","0WW2TTMY","N8H53ELD","M5USWQO6","XWYJX1DE","BHVNXPL7",
+  "04DE42I2","TTMVZ1HZ","HNTD3GXN","ETL2AYRM","7PLFNTTV","N02HC1MH","0VHL92AN",
+  "GCSOOSX1","72R7AUSN","N41SNRB8","LMPV1HHL","DJN2Q35J","Y39IXI04","F3DR64CP",
+  "J0TXDYVT","C7HKPBR6","SISF7EE3","PGC3TPCA","52IKW3ZX","0WSH3OIM","SLM9CDWX",
+  "CSW78H3Y","ZFVGOJ86","1G1C3WWX","7QJ9MYND","Z15O30N9","I3HZXFRD","5C1TDGZU",
+  "HY01V15Q","SCS6X3U3","IE7QIWXP","AJ4HY9VF","4DBIB9E3","YY8MXKBE","L7GGJ0X5",
+  "45AL54YK","93UKN0F0","GCDIP8RJ","79P0LYR9","NNCCENSP","LDXYC57L","AMKLL8DA",
+  "Z8WXS5PU","HDA3VQ9W","E2DZDC6W","LHTMAQW4","YHP9B7YO","AQWVXW37","W24AD03T",
+  "J69AYQ25","P9E9MRP6","ZT3DNC62","YTHRDM1H","GBBFXNLM","8J4P3DDC","45PRRAJH",
+  "89MPJ9KD","7X0AXZDD","4DXZJ1BO","P3Q4S3QX","TD6M9T9L","I1HJK8LU","8I5R9DYX",
+  "CBA9CH8J","J69WGEW8","XAJCFCEX","4SZ1YM7G","9BYMWOZN","IV8ZI8T1","6ZLNY7QS",
+  "N2YYMHNR","1YD90V1M","DB9XR9VY","4RUKG68Z","XFF9AC19","C8U3HZLO","2GRVVINB",
+  "VDG6A2HT","BID0F50G","3QFDRSK1","MT5D6RHO","5IH4BG4E","9DW12T5R","8C5QBP61",
+  "LC2RO2DC","5Z4L1LPR","67HMDT5J","F63NKPG6","I6TLRC3T","99JKY7T0","M6RJUL9T",
+  "ED0XQLUQ","03G0D41Y","NJ9HRTY3","FGJAKDR4","J92GB96P","1SPTQ71Z","90LY56GV",
+  "7HH6Q6S6","X9VWPR9X","CKK3MA91","Z33USYBT","IQKCNAX2","O5Q6SX6T","Q14M8JED",
+  "K34KPB4M","Q63J90W3","DKL22CK4","1LVKXSS5","CUVIF08Q","Z7AQM7UT","WRB7ZQ4T",
+  "HY8Z26M8","E3BFXNC1","M4ZUI0Z8","1WWQ6UM9","7MQU00G2","NQ8VJ7QH","LUUJXVZ3",
+  "R8Q1NOGT","R5T9DDFL","TJ3RYBND","ECKL58FQ","LH5ZYSAW","SZ58D18A","Y6AQ3W39",
+  "1UP7ELN6","W3L0TC1A","P05KKLNY","FJBNGOKW","D8EQ7UC0","T3ZZR0GF","ZUSJ34YH",
+  "1ZZVPO4Q","HCXW8R8X","61HE2RR9","1I4RG6JM","MUL4RHMI","DULKZAFG","9E8TBNQX",
+  "Z2UZ5TQ9","N0WMMN62","IQ2TH8HY","ZH8E6TDX","71FMOM52","OYWJ3E6S","Q6B03U9S",
+  "ZJULY3VH","XHGSXBOO","LYO60U1H","W5S4V9CD","DZDSDHMA","YQKZUD3D","0UCGT9V2",
+  "Y1K6DXXP","9ROQ4B7X","Q9U78LYW","WICBJJJ9","UUC41G0N","27PLCN6T","2M1ET6OY",
+  "42Y45VGA","ZQ8R61PK","G5V0JXRA","OW4NHKNY","KQSN6QR5","6IOGEZAG","WN7C18WR",
+  "SQIR5DLB","1ZL68K13","A3CM85UP","LXK1YXIU","37ATNXK9","HDL1YUTT","KIV3GO15",
+  "YO53U85R","GQHBEVPO","53GV3JIA","J2JLZABZ","0JZK14TS","N73KVEGS","0OY2Y00I",
+  "W90H5UKG","O94OVFLI","2MD3IQCA","9TAQLCQ0","1QQA4XU7","VZV26M81","IOZY0QJI",
+  "ND26Q0UI","MS6YDV19","69LZBLYS","TTAEVFIK","H0PK8EGW","VQO9D7GB","2RQ8M9R8",
+  "16XOXE57","F02XQITV","V1CQPL6E","QZIS9CNB","UJJ08JUX","QIKH98GP","XCRDTQ6U",
+  "MBCV8VJT","DNIB78B0","CGB6IV7D","65K4A95Y","LS82UZPM","0Y8Q22B7","ZRZK7NVU",
+  "E6UXI43R","4A04TJZP","PJPEHKOX","CKE9GV36","6IA08W00","4V4XPGNB","DT2B2JK0",
+  "T62CG4ZR","W1L0DU4S","DRZTA7D7","68JK5K46","1E5UQICQ","Z1KSN2E5","4G5P6U5I",
+  "78F5EB39","PPNFC3OA","CDQ7DGLT","OEIG2X0R","Z3DUOOQ6","J2H10ZB2","ZWLUGLHV",
+  "V6ALH9Z9","RV35EXLO","PVZFCBNE","G4WT42Y5","74YJSF3T","7FP8PLAB","SD7RQ1LB",
+  "9IJ5T04Q","CWNJY2PG","JEDR5D67","SXJ8JZ4R","W3XLJY9B","SPKIHROH","ZTFCY34J",
+  "76WZ1Q79","QXDRWBYX","AB4Q5UCV","M1CJ0ZPO","5W4ZZSOY","6A63TYXS","46UZW1F3",
+  "LD6GHXTN","YJP4F1ZP","WSI6NTYP","P5VUSWTZ","YWSREO91","XHQO6V6Y","69PNM6HF",
+  "TJMEP9S3","0YH7NZMJ","WHKW0ZIQ","5R3GT2UQ","LW55QCKV","K1F8OWDJ","B63FKJNC",
+  "NPEUD97P","JWR9FCJZ","Y5GQ8COH","39GOX9KY","I8XYVI6H","OKBYOGJD","3CFFZ4MC",
+  "VLFQ6R5Y","E87QNRH9","TBE3AJWQ","W2F64IT8","7D9D8WZ6","5NNK7G4Y","7MHV4LUZ",
+  "ODWJW2ZH","CH5F97F0","5YKNTUZG","S4FZ5XK0","9S03JOZG","61A8XJXQ","O05H1V5G",
+  "2SMJ1XMQ","BAOLKL0X","IS5G4SRZ","KKOZ2RMD","U9IY9KWL","C2P1DXTY","37K85GAQ",
+  "04E1DA4P","O5X0NDWW","LJUH27X4","5JYV7J14","98X96JLK","1WTK6YS5","XCKEOWMH",
+  "6A9P0R0A","T1LMU1RX","ZROIOKQZ","1QBAI4M8","KYDKTPG3","QCKW8KSX","E1V10J7W",
+  "6RQ3P2LU","NHC8O6J1","LHK7QQMT","24T3T9M4","B1I8W0GK","3J2Y3MZ9","XGP1YZY4",
+  "W4MQRS4Y","WJL8RB8E","5PP4CKHO","LZK58FZG","F73T5SVP","1XGV3O5T","4GCHSVRI",
+  "A92PC0UX","QW9TEA22","E3L5CBX9","HHUZF7VC","4NKG7Q69","Q53K6YGV","NJSGGXGG",
+  "P5OYQ05S","0C6GLT9R","EHLQIAOW","JCT10U41","Z33LY3XP","I3QJSQ0W","09V1NUSM",
+  "GL44MCNZ","7OQJJCH6","53T3T47R","K9J9C7D9","S70LZK8X","UMLP6WT0","YMWFVNG7",
+  "5H4U8AQ7","B3CINB31","A6U7RLXN","JXJ4KR8G","CSMUBOLH","X4EHD92T","S4QXTHPJ",
+  "D1FQH0U3","24LY9MY7","KU7BOLCI","SGLI3TSB","F99PPBJI","GQ0R9HBR","JZ75Z9QY",
+  "T3LPJJ9Q","XOE09H2W","7Q9H7E6Z","BTNZGOV1","L3YNX5GZ","BRKEHKQU","4N2N0ZSC",
+  "F8PM6PQD","OYBN12N3","4YOQJNY5","75XKEEE8","V48R3T7V","PM9G2OKW","HWYMM42N",
+  "SKHD7UY0","4Y61MPCD","KLCWH09W","2VRHZZJ9","LRDQDYHL","S1CS0Y5R","TV3N5ND0",
+  "Z33LY3XP"
+]);
 
-  <!-- Signal Area -->
-  <div id="signalArea" class="hidden">
-    <div class="circle" id="loader"></div>
-    <button onclick="showSignal()">🎯 Get Signal</button>
-    <div id="signalText"></div>
-  </div>
+function checkKey() {
+  const input = document.getElementById('keyInput').value.trim().toUpperCase();
+  const resultDiv = document.getElementById('result');
 
-  <script>
-    const validKeys = [
-      "KM6YSD52", "AB1C2D3E", "XPL982KF", "CRASH123", "VIPKEY01"
-    ]; // You can add 500 keys here
+  if (!input) {
+    resultDiv.textContent = "Please enter a key.";
+    resultDiv.style.color = "red";
+    return;
+  }
 
-    function validateKey() {
-      const key = document.getElementById("keyInput").value.trim();
-      if (validKeys.includes(key)) {
-        document.getElementById("keyForm").classList.add("hidden");
-        document.getElementById("platformForm").classList.remove("hidden");
-      } else {
-        alert("❌ Invalid key!");
-      }
-    }
+  if (VALID_KEYS.has(input)) {
+    resultDiv.textContent = `✅ The key "${input}" is VALID!`;
+    resultDiv.style.color = "green";
+  } else {
+    resultDiv.textContent = `❌ The key "${input}" is NOT valid.`;
+    resultDiv.style.color = "red";
+  }
+}
+</script>
 
-    function selectPlatform() {
-      const selected = document.getElementById("platform").value;
-      if (!selected || selected === "Select Platform") {
-        alert("Please select a platform");
-        return;
-      }
-      document.getElementById("platformForm").classList.add("hidden");
-      document.getElementById("signalArea").classList.remove("hidden");
-    }
-
-    function showSignal() {
-      document.getElementById("loader").style.display = "block";
-      document.getElementById("signalText").innerText = "";
-
-      setTimeout(() => {
-        document.getElementById("loader").style.display = "none";
-        const signal = (Math.random() * (80 - 1.01) + 1.01).toFixed(2) + "x";
-        document.getElementById("signalText").innerText = "Next Signal: " + signal;
-      }, 2500);
-    }
-  </script>
 </body>
 </html>
