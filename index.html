@@ -1,33 +1,52 @@
-  <!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>AviX Signals</title>
   <meta charset="UTF-8">
+  <title>AviX Signals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #0e0e0e;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
       color: white;
-      text-align: center;
+      font-family: Arial, sans-serif;
       padding: 20px;
+      text-align: center;
+      margin: 0;
     }
 
-    .hidden { display: none; }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
 
     input, select, button {
-      padding: 10px;
-      margin: 10px;
+      width: 90%;
+      max-width: 400px;
+      padding: 12px;
       font-size: 16px;
-      border-radius: 5px;
+      margin: 10px auto;
+      display: block;
+      border-radius: 8px;
       border: none;
     }
 
+    button {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
     .circle {
-      width: 80px;
-      height: 80px;
-      margin: 20px auto;
-      border: 6px solid #3e8ed0;
-      border-top: 6px solid transparent;
+      width: 60px;
+      height: 60px;
+      margin: 30px auto;
+      border: 5px solid #00ffcc;
+      border-top: 5px solid transparent;
       border-radius: 50%;
       animation: spin 2s linear infinite;
       display: none;
@@ -39,48 +58,66 @@
     }
 
     #signalText {
-      font-size: 24px;
-      margin-top: 20px;
+      font-size: 26px;
       color: #00ff77;
+      margin-top: 20px;
     }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <h1>AviX Signals</h1>
+  <h1>🚀 AviX Signals</h1>
 
+  <!-- Key Form -->
   <div id="keyForm">
-    <p>Enter Your One-Time Key</p>
-    <input type="text" id="keyInput" placeholder="Enter key like KM6YSD52" />
-    <br />
+    <input type="text" id="keyInput" placeholder="Enter your key (e.g. KM6YSD52)">
     <button onclick="validateKey()">Unlock</button>
   </div>
 
-  <div id="appSelect" class="hidden">
-    <p>Select Platform</p>
+  <!-- Platform Selection -->
+  <div id="platformForm" class="hidden">
     <select id="platform">
+      <option disabled selected>Select Platform</option>
       <option>Melbet</option>
       <option>1xBet</option>
       <option>Mostbet</option>
       <option>1Win</option>
     </select>
-    <br />
-    <button onclick="showSignal()">Get Signal</button>
+    <button onclick="selectPlatform()">Continue</button>
+  </div>
+
+  <!-- Signal Area -->
+  <div id="signalArea" class="hidden">
     <div class="circle" id="loader"></div>
+    <button onclick="showSignal()">🎯 Get Signal</button>
     <div id="signalText"></div>
   </div>
 
   <script>
-    const validKeys = ["KM6YSD52", "AB1C2D3E", "TEST1234", "FREEPASS", "TRYME123"]; // add 500 in production
+    const validKeys = [
+      "KM6YSD52", "AB1C2D3E", "XPL982KF", "CRASH123", "VIPKEY01"
+    ]; // You can add 500 keys here
 
     function validateKey() {
       const key = document.getElementById("keyInput").value.trim();
       if (validKeys.includes(key)) {
         document.getElementById("keyForm").classList.add("hidden");
-        document.getElementById("appSelect").classList.remove("hidden");
+        document.getElementById("platformForm").classList.remove("hidden");
       } else {
-        alert("Invalid key!");
+        alert("❌ Invalid key!");
       }
+    }
+
+    function selectPlatform() {
+      const selected = document.getElementById("platform").value;
+      if (!selected || selected === "Select Platform") {
+        alert("Please select a platform");
+        return;
+      }
+      document.getElementById("platformForm").classList.add("hidden");
+      document.getElementById("signalArea").classList.remove("hidden");
     }
 
     function showSignal() {
@@ -89,9 +126,9 @@
 
       setTimeout(() => {
         document.getElementById("loader").style.display = "none";
-        const signal = (Math.random() * (3.5 - 1.2) + 1.2).toFixed(2) + "x";
+        const signal = (Math.random() * (80 - 1.01) + 1.01).toFixed(2) + "x";
         document.getElementById("signalText").innerText = "Next Signal: " + signal;
-      }, 3000);
+      }, 2500);
     }
   </script>
 </body>
